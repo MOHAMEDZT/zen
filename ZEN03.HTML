@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zen Locations Directory</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2d3436;
+            --secondary-color: #0984e3;
+            --nav-bg: #1a1a2e;
+            --background-color: #f8f9fa;
+            --card-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            --location-color: #4CAF50;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--background-color);
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--nav-bg);
+            padding: 1rem;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            z-index: 1000;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .nav-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-logo {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: white;
+            letter-spacing: 1.5px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-link {
+            color: rgba(255,255,255,0.8);
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .nav-link i {
+            font-size: 1.3rem;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-link.active {
+            color: var(--secondary-color);
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 1rem;
+        }
+
+        .locations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            animation: slideUp 0.4s ease;
+        }
+
+        .location-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .location-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .location-title {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .phone-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #f8f9fa;
+            padding: 0.8rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+        }
+
+        .phone-number {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .copy-icon {
+            color: var(--secondary-color);
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .copy-icon:hover {
+            transform: scale(1.1);
+        }
+
+        /* Details Page */
+        #details {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: white;
+            padding: 2rem;
+            transform: translateY(100%);
+            opacity: 0;
+            transition: all 0.4s ease;
+        }
+
+        #details.active {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 1.5rem;
+            left: 1.5rem;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            cursor: pointer;
+            color: var(--primary-color);
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: rotate(-360deg) scale(1.1);
+        }
+
+        .details-content {
+            max-width: 500px;
+            margin: 0 auto;
+            padding-top: 3rem;
+        }
+
+        .location-info {
+            margin: 2rem 0;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin: 1rem 0;
+            color: #666;
+        }
+
+        .social-btn {
+            width: 100%;
+            padding: 1rem;
+            margin: 0.8rem 0;
+            border: none;
+            border-radius: 8px;
+            background: #f8f9fa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .social-btn:hover {
+            color: white;
+            transform: translateX(10px);
+        }
+
+        .instagram-btn:hover { background: #E1306C; }
+        .facebook-btn:hover { background: #3B5998; }
+        .website-btn:hover { background: var(--secondary-color); }
+        .location-btn:hover { background: var(--location-color); }
+
+        /* Animations */
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @media (max-width: 600px) {
+            .nav-links { gap: 1rem; }
+            .nav-link span { display: none; }
+            .nav-link i { font-size: 1.4rem; }
+            .container { padding: 0.5rem; }
+            .back-btn { top: 1rem; left: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Content -->
+    <div class="container" id="main">
+        <div class="locations-grid">
+            <!-- ZEN Oran Card -->
+            <div class="location-card" onclick="showLocation('oran')">
+                <h2 class="location-title">ZEN ORAN</h2>
+                <div class="phone-section">
+                    <span class="phone-number">+213 123 4567</span>
+                    <i class="far fa-copy copy-icon" onclick="copyPhone(event, '+2131234567')"></i>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>123 Peace Street, Oran</span>
+                </div>
+            </div>
+
+            <!-- ZEN Alger Card -->
+            <div class="location-card" onclick="showLocation('alger')">
+                <h2 class="location-title">ZEN ALGER</h2>
+                <div class="phone-section">
+                    <span class="phone-number">+213 765 4321</span>
+                    <i class="far fa-copy copy-icon" onclick="copyPhone(event, '+2137654321')"></i>
+                </div>
+                <div class="info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>456 Harmony Avenue, Alger</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details Page -->
+    <div id="details">
+        <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i></button>
+        <div class="details-content" id="detailsContent"></div>
+    </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="bottom-nav">
+        <div class="nav-content">
+            <div class="nav-logo">ZEN</div>
+            <div class="nav-links">
+                <a href="#" class="nav-link active" onclick="showMain()">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <script>
+        const locations = {
+            oran: {
+                title: "ZEN ORAN",
+                phone: "+213 123 4567",
+                address: "Es Senia Mall 2eme Etage, Oran",
+                hours: "Mon-Sun: 8AM - 10PM",
+                instagram: "#",
+                facebook: "#",
+                website: "#",
+                mapLink: "#",
+            },
+            alger: {
+                title: "ZEN ALGER",
+                phone: "+213 765 4321",
+                address: "60 Rue Didouche Mourad, Alger Centre 16000",
+                hours: "Mon-Sun: 9AM - 9PM",
+                instagram: "#",
+                facebook: "#",
+                website: "#",
+                mapLink: "#",
+            }
+        };
+
+        function showLocation(locationId) {
+            const loc = locations[locationId];
+            const detailsContent = document.getElementById('detailsContent');
+            
+            detailsContent.innerHTML = `
+                <h2>${loc.title}</h2>
+                <div class="location-info">
+                    <div class="phone-section">
+                        <span class="phone-number">${loc.phone}</span>
+                        <i class="far fa-copy copy-icon" 
+                           onclick="copyPhone(event, '${loc.phone}')"></i>
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        ${loc.address}
+                    </div>
+                    <div class="info-item">
+                        <i class="fas fa-clock"></i>
+                        ${loc.hours}
+                    </div>
+                    
+                </div>
+
+                <button class="social-btn instagram-btn" onclick="window.open('${loc.instagram}')">
+                    <i class="fab fa-instagram"></i>
+                    Instagram
+                </button>
+                <button class="social-btn facebook-btn" onclick="window.open('${loc.facebook}')">
+                    <i class="fab fa-facebook-f"></i>
+                    Facebook
+                </button>
+                <button class="social-btn website-btn" onclick="window.open('${loc.website}')">
+                    <i class="fas fa-globe"></i>
+                    Website
+                </button>
+                <button class="social-btn location-btn" onclick="window.open('${loc.mapLink}')">
+                    <i class="fas fa-map-marker-alt"></i>
+                    Location
+                </button>
+            `;
+
+            document.getElementById('details').classList.add('active');
+        }
+
+        function goBack() {
+            document.getElementById('details').classList.remove('active');
+        }
+
+        function showMain() {
+            goBack();
+            document.getElementById('main').style.display = 'block';
+        }
+
+        function copyPhone(event, number) {
+            event.stopPropagation();
+            navigator.clipboard.writeText(number.replace(/ /g, ''));
+            showNotification('Number copied to clipboard!');
+        }
+
+        function showNotification(message) {
+            const toast = document.createElement('div');
+            toast.textContent = message;
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: var(--primary-color);
+                color: white;
+                padding: 12px 24px;
+                border-radius: 25px;
+                box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                z-index: 1000;
+                font-size: 0.9rem;
+            `;
+            
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+    </script>
+</body>
+</html>
